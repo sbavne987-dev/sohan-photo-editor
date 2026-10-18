@@ -2,211 +2,153 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111126">
-<title>Sohan Photo Editor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sohan Studio | Creative Design</title>
 <style>
+:root{--bg:#0d0b15;--card:#191625;--line:#352b48;--purple:#a77bff;--pink:#ff79ba;--text:#fff;--muted:#bbb3cc}
 *{box-sizing:border-box}
-body{margin:0;background:#10101d;color:#f7f7ff;font-family:Arial,sans-serif}
-header{padding:18px;background:#19192c;border-bottom:1px solid #34344c}
-header h1{margin:0;font-size:23px}
-header p{margin:6px 0 0;color:#b9b9d2;font-size:13px}
-main{max-width:950px;margin:auto;padding:16px}
-.panel{background:#1b1b30;border:1px solid #35354d;border-radius:15px;padding:15px;margin-bottom:16px}
-h2{font-size:18px;margin:0 0 13px}
-button,.upload{border:0;border-radius:9px;padding:11px 13px;background:#7658f5;color:white;font-weight:bold;cursor:pointer;font-size:13px}
-input,select{background:#111126;color:white;border:1px solid #42425c;padding:11px;border-radius:8px;max-width:100%;min-width:0}
-input[type=file]{width:100%}
-.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.controls label{display:flex;flex-direction:column;gap:7px;font-size:12px;color:#d2d2e7}
-.wide{grid-column:1/-1}
-.canvas-wrap{background:#0a0a12;border-radius:12px;min-height:210px;display:flex;justify-content:center;align-items:center;overflow:hidden;padding:10px}
-canvas{max-width:100%;height:auto;max-height:65vh;object-fit:contain}
-.hint{color:#aaaac5;font-size:12px;line-height:1.6}
-.templates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
-.tpl{padding:9px 3px;min-height:76px;border:1px solid #454560;border-radius:10px;text-align:center;background:#24243c;color:white;font-size:12px;cursor:pointer}
-.tpl .sample{display:block;font-size:23px;margin-bottom:6px}
-.tpl.locked{opacity:.62;border-style:dashed}
-.tpl.selected{border:2px solid #a99aff;background:#333054}
-button:disabled{opacity:.4}
-.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
-.actions button{flex:1}
-@media(min-width:650px){.templates{grid-template-columns:repeat(5,minmax(0,1fr))}.controls{grid-template-columns:repeat(3,minmax(0,1fr))}}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif}
+header{padding:16px;border-bottom:1px solid var(--line);background:#11101b;position:sticky;top:0;z-index:5}
+.bar{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:23px;font-weight:900}.logo span{color:var(--purple)}
+nav{display:flex;gap:18px;overflow:auto;padding-top:14px}
+nav a{color:#d8cdea;text-decoration:none;white-space:nowrap;font-size:13px}
+.wrap{max-width:1100px;margin:auto;padding:16px}
+.hero{margin:12px 0 25px;padding:30px 22px;border-radius:22px;background:radial-gradient(circle at 90% 10%,#a77bff66,transparent 40%),linear-gradient(130deg,#28183f,#171323);border:1px solid #48345e}
+.tag{color:#8ff5d8;font-size:11px;letter-spacing:2px;font-weight:bold}
+h1{font-size:clamp(30px,6vw,48px);line-height:1.12;margin:13px 0}
+p{line-height:1.6;color:var(--muted)}
+input,select,button{font:inherit}
+.search{display:flex;background:white;padding:5px;border-radius:11px;max-width:550px;gap:5px}
+.search input{flex:1;min-width:0;border:0;padding:10px;color:#222;outline:0}
+button{cursor:pointer}
+.primary{background:linear-gradient(100deg,#a77bff,#ed72b7);color:white;border:0;border-radius:9px;padding:11px 14px;font-weight:800}
+section{margin:30px 0}
+.heading{margin-bottom:14px}.heading h2{margin:0;font-size:22px}.heading p{font-size:13px;margin:5px 0}
+.categories,.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.category{padding:15px;background:var(--card);border:1px solid var(--line);border-radius:14px;color:white;text-align:left}
+.category b{display:block;margin-bottom:5px}.category small{color:var(--muted)}
+.filters{display:flex;gap:7px;overflow:auto;margin:14px 0}
+.filters button{white-space:nowrap;border:1px solid var(--line);background:var(--card);color:white;border-radius:30px;padding:8px 12px}
+.template{padding:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;color:white;text-align:left;min-width:0}
+.art{aspect-ratio:4/5;padding:14px;display:flex;flex-direction:column;justify-content:space-between;white-space:pre-line;overflow:hidden}
+.art small{font-size:10px;letter-spacing:1px;font-weight:bold}
+.art strong{font-size:clamp(22px,5vw,34px);line-height:1.05;overflow-wrap:anywhere}
+.meta{padding:10px;font-size:12px;display:flex;justify-content:space-between;gap:5px}
+.meta small{color:#d0b7ff}
+.editor{display:grid;grid-template-columns:1fr;gap:13px}
+.canvasbox,.controls,.about{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px;min-width:0}
+canvas{display:block;width:100%;height:auto;border-radius:9px}
+.controls{display:grid;gap:12px}
+.field{display:grid;gap:7px;font-size:13px;font-weight:700}
+.field input:not([type=color]):not([type=range]),.field select{width:100%;min-width:0;background:#100e19;color:white;border:1px solid var(--line);border-radius:9px;padding:11px}
+.field input[type=color]{width:100%;height:38px;background:#100e19;border:0}
+.field input[type=range]{width:100%;accent-color:var(--purple)}
+.buttons{display:flex;gap:8px}.buttons button{flex:1}
+.secondary{background:#292238;color:white;border:1px solid var(--line);padding:10px;border-radius:9px}
+footer{text-align:center;border-top:1px solid var(--line);padding:25px;color:var(--muted)}
+@media(min-width:700px){.categories{grid-template-columns:repeat(4,1fr)}.gallery{grid-template-columns:repeat(4,1fr)}.editor{grid-template-columns:1.1fr .9fr}.hero{padding:40px}.category{padding:20px}}
 </style>
 </head>
 <body>
 <header>
-<h1>✦ Sohan Photo Editor</h1>
-<p>आपकी फोटो, आपका स्टाइल · 50 डिज़ाइन टेम्पलेट</p>
+<div class="bar"><div><div class="logo">SOHAN <span>STUDIO</span></div><small style="color:#bbb3cc">YOUR IDEAS. YOUR STYLE.</small></div>
+<a href="#gallery" style="color:white;text-decoration:none">Templates ↗</a></div>
+<nav><a href="#home">Home</a><a href="#gallery">Templates</a><a href="#editor">Photo Editor</a><a href="#about">About</a></nav>
 </header>
-<main>
-<section class="panel">
-<h2>1. अपनी फोटो चुनें</h2>
-<input id="photo" type="file" accept="image/*">
-<p class="hint">अपनी गैलरी से फोटो चुनें। फोटो आपके ब्राउज़र में एडिट होगी।</p>
+
+<main class="wrap" id="home">
+<div class="hero">
+<div class="tag">✦ YOUR CREATIVE SPACE</div>
+<h1>आपकी सोच।<br>आपका स्टाइल।</h1>
+<p>सुंदर पोस्टर, सोशल मीडिया पोस्ट और थंबनेल बनाइए। अपनी फोटो और अपने टेक्स्ट से डिज़ाइन को नया रूप दीजिए।</p>
+<form class="search" id="searchForm"><input id="search" placeholder="टेम्पलेट खोजें..." aria-label="टेम्पलेट खोजें"><button class="primary">खोजें</button></form>
+<p><a href="#gallery" style="color:white">टेम्पलेट चुनें ↓</a></p>
+</div>
+
+<section>
+<div class="heading"><h2>आप क्या बनाना चाहते हैं?</h2><p>अपनी पसंद की कैटेगरी चुनें।</p></div>
+<div class="categories">
+<button class="category" onclick="filter('Instagram')"><b>▣ Instagram पोस्ट</b><small>पोस्ट और स्टोरी</small></button>
+<button class="category" onclick="filter('YouTube')"><b>▶ YouTube थंबनेल</b><small>वीडियो कवर</small></button>
+<button class="category" onclick="filter('Birthday')"><b>✿ Birthday पोस्टर</b><small>खास दिन के लिए</small></button>
+<button class="category" onclick="filter('Quote')"><b>✎ शायरी और कोट्स</b><small>हिंदी टेक्स्ट पोस्ट</small></button>
+</div>
 </section>
 
-<section class="panel">
-<h2>2. फोटो एडिट करें</h2>
-<div class="canvas-wrap">
-<canvas id="canvas" width="600" height="750"></canvas>
+<section id="gallery">
+<div class="heading"><h2>टेम्पलेट गैलरी</h2><p>किसी डिज़ाइन को चुनकर एडिटर में खोलें।</p></div>
+<div class="filters">
+<button onclick="filter('')">सभी</button><button onclick="filter('Instagram')">Instagram</button><button onclick="filter('YouTube')">YouTube</button><button onclick="filter('Birthday')">Birthday</button><button onclick="filter('Quote')">Quotes</button>
 </div>
-<div class="controls" style="margin-top:13px">
-<label>अपना टेक्स्ट
-<input id="caption" placeholder="यहाँ अपना नाम लिखें" maxlength="100">
-</label>
-<label>टेक्स्ट का रंग
-<input id="textColor" type="color" value="#ffffff">
-</label>
-<label>फ़ॉन्ट आकार
-<input id="fontSize" type="range" min="18" max="90" value="38">
-</label>
-<label>ब्राइटनेस
-<input id="brightness" type="range" min="50" max="150" value="100">
-</label>
-<label>कॉन्ट्रास्ट
-<input id="contrast" type="range" min="50" max="150" value="100">
-</label>
-<label>फ़िल्टर
-<select id="filter">
-<option value="none">नॉर्मल</option>
-<option value="grayscale(1)">ब्लैक एंड व्हाइट</option>
-<option value="sepia(1)">विंटेज</option>
-<option value="saturate(1.8)">कलरफुल</option>
-<option value="hue-rotate(45deg)">कलर शिफ्ट</option>
-</select>
-</label>
-</div>
-<div class="actions">
-<button id="apply">एडिट लागू करें</button>
-<button id="download">PNG डाउनलोड करें</button>
-</div>
-<p class="hint">टेम्पलेट चुनने के बाद टेक्स्ट लिखकर “एडिट लागू करें” दबाएँ।</p>
+<div class="gallery" id="galleryItems"></div>
 </section>
 
-<section class="panel">
-<h2>3. टेम्पलेट चुनें</h2>
-<p class="hint">पहले 40 टेम्पलेट मुफ्त हैं। अंतिम 10 Premium के लिए लॉक हैं। Premium अभी केवल डेमो है, कोई भुगतान न करें।</p>
-<div id="templates" class="templates"></div>
+<section id="editor">
+<div class="heading"><h2>अपना डिज़ाइन बनाएँ</h2><p>फोटो और टेक्स्ट बदलें, फिर PNG डाउनलोड करें।</p></div>
+<div class="editor">
+<div class="canvasbox"><canvas id="canvas" width="900" height="900"></canvas><p style="text-align:center;font-size:12px">डिज़ाइन का प्रीव्यू</p></div>
+<div class="controls">
+<label class="field">फोटो चुनें<input type="file" id="photo" accept="image/*"></label>
+<label class="field">मुख्य टेक्स्ट<input id="mainText" value="अपना स्टाइल बनाओ!" maxlength="100"></label>
+<label class="field">छोटा टेक्स्ट<input id="subText" value="CREATED WITH SOHAN STUDIO" maxlength="100"></label>
+<label class="field">टेक्स्ट का रंग<input type="color" id="textColor" value="#ffffff"></label>
+<label class="field">बैकग्राउंड रंग<input type="color" id="bgColor" value="#692fc0"></label>
+<label class="field">टेक्स्ट आकार <span id="sizeLabel">58</span><input type="range" id="fontSize" min="24" max="100" value="58"></label>
+<label class="field">स्टाइल<select id="style"><option value="gradient">Gradient</option><option value="minimal">Minimal</option><option value="neon">Neon Frame</option></select></label>
+<div class="buttons"><button class="secondary" id="reset">रीसेट</button><button class="primary" id="download">PNG डाउनलोड ↓</button></div>
+<small style="color:#bbb3cc">फोटो वैकल्पिक है। बिना फोटो भी पोस्टर बनाएँ।</small>
+</div>
+</div>
 </section>
-<footer class="hint" style="text-align:center;padding:12px">
-Sohan Photo Editor · Version 1.0
-</footer>
+<section id="about" class="about"><h2>Sohan Studio</h2><p>आपके क्रिएटिव आइडिया के लिए एक आसान डिज़ाइन टूल। यह शुरुआती संस्करण है। प्रीमियम भुगतान और AI इमेज जनरेशन अभी शामिल नहीं हैं।</p></section>
 </main>
+<footer>© Sohan Studio · Design your ideas</footer>
+
 <script>
-const $=id=>document.getElementById(id);
-const canvas=$("canvas"),ctx=canvas.getContext("2d");
-let photo=null,chosen=0;
-const names=[
-"Original","Soft Glow","Vintage","Black & White","Warm Tone",
-"Cool Tone","Dreamy","Golden","Rose","Purple",
-"Ocean","Sunset","Forest","Neon","Classic",
-"Portrait","Cinematic","Bright","Moody","Pastel",
-"Birthday","Wedding","Love","Friendship","Travel",
-"Nature","Festival","Diwali","Holi","Navratri",
-"New Year","Congratulations","Best Memories","My Style","Inspiration",
-"Minimal","Elegant","Retro","Color Pop","Night",
-"Premium Gold","Premium Rose","Premium Neon","Premium Royal",
-"Premium Wedding","Premium Film","Premium Dream","Premium Glow",
-"Premium Festival","Premium Portrait","Premium Creator"
+const data=[
+['Neon Creator','YouTube','#21113e','#8e4cff','CREATE\nYOUR MAGIC','THE CREATOR EDITION','MAKE IT DIFFERENT'],
+['Bold Social','Instagram','#f04483','#ffad75','BE\nUNSTOPPABLE','DAILY REMINDER','SHOW UP AS YOU'],
+['Midnight Quote','Quote','#101c35','#3266a8','बड़े सपने\nदेखो','आज की सोच','रुकना नहीं है'],
+['Birthday Pop','Birthday','#672c9d','#f16fbd','HAPPY\nBIRTHDAY','TODAY IS YOUR DAY','MAKE A WISH ✦'],
+['Minimal Mood','Instagram','#e8ddc9','#b7c6a4','less noise.\nmore you.','SLOW LIVING CLUB','BREATHE'],
+['Video Impact','YouTube','#f6c945','#e96b36','ये गलती\nमत करना!','CREATOR TIPS','WATCH NOW →'],
+['Hindi Poetry','Quote','#271b39','#b05e8e','कुछ बातें\nखामोशी में…','दिल की बात','HINDI QUOTES'],
+['Golden Wishes','Birthday','#231c15','#c38e46','YOUR DAY.\nYOUR GLOW.','SPECIAL EDITION','CELEBRATE YOU']
 ];
-const looks=[
-"none","brightness(1.08) saturate(1.1)","sepia(.45) contrast(1.1)",
-"grayscale(1)","sepia(.25) saturate(1.3)","hue-rotate(15deg)",
-"brightness(1.1) saturate(.8)","sepia(.3) saturate(1.4)",
-"hue-rotate(325deg) saturate(1.2)","hue-rotate(260deg)",
-"hue-rotate(170deg)","sepia(.2) saturate(1.8)",
-"hue-rotate(70deg) saturate(1.2)","saturate(2) contrast(1.2)",
-"contrast(1.1)","brightness(1.05)","contrast(1.3) saturate(1.1)",
-"brightness(1.2)","brightness(.8) contrast(1.2)",
-"saturate(.75) brightness(1.08)"
-];
-const emojis=["✦","☀","🎞","◐","🌅","❄","☁","✨","🌹","💜","🌊","🌇","🌿","⚡","◆","♡","🎬","☼","🌙","🌸","🎂","💍","♥","♧","✈","🌳","🎉","🪔","🎨","💃","🎆","🏆","📸","✧","★","◇","♛","📼","🌈","🌃"];
+let selected=data[0],photoImage=null;
+function filter(term=''){
+term=term.toLowerCase().trim();let list=data.filter(t=>!term||(t[0]+' '+t[1]+' '+t[4]).toLowerCase().includes(term));
+const box=document.getElementById('galleryItems');box.innerHTML='';
+list.forEach(t=>{
+const b=document.createElement('button');b.className='template';
+const art=document.createElement('div');art.className='art';art.style.background=`linear-gradient(145deg,${t[2]},${t[3]})`;
+const k=document.createElement('small');k.textContent=t[5];
+const title=document.createElement('strong');title.textContent=t[4];
+const f=document.createElement('small');f.textContent=t[6];
+art.append(k,title,f);const meta=document.createElement('div');meta.className='meta';meta.innerHTML='<span></span><small>FREE</small>';meta.firstChild.textContent=t[0];b.append(art,meta);
+b.onclick=()=>{selected=t;document.getElementById('mainText').value=t[4].replace(/\n/g,' ');document.getElementById('subText').value=t[6];document.getElementById('bgColor').value=t[3];draw();document.getElementById('editor').scrollIntoView({behavior:'smooth'})};box.append(b);
+});
+}
 function draw(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-if(photo){
-let scale=Math.min(canvas.width/photo.width,canvas.height/photo.height);
-let w=photo.width*scale,h=photo.height*scale;
-ctx.save();
-ctx.filter=(looks[chosen%looks.length]||"none")+" brightness("+$("brightness").value+"%) contrast("+$("contrast").value+"%) "+$("filter").value;
-ctx.drawImage(photo,(canvas.width-w)/2,(canvas.height-h)/2,w,h);
-ctx.restore();
-}else{
-ctx.fillStyle="#20203a";ctx.fillRect(0,0,600,750);
-ctx.textAlign="center";ctx.fillStyle="#aaa5ff";ctx.font="bold 35px Arial";
-ctx.fillText("SOHAN",300,340);ctx.fillText("PHOTO EDITOR",300,390);
-ctx.font="16px Arial";ctx.fillStyle="#eeeeff";
-ctx.fillText("अपनी फोटो चुनकर शुरू करें",300,440);
+const c=document.getElementById('canvas'),x=c.getContext('2d'),w=c.width,h=c.height;
+let bg=document.getElementById('bgColor').value,tc=document.getElementById('textColor').value,style=document.getElementById('style').value;
+x.clearRect(0,0,w,h);let g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,selected[2]);g.addColorStop(1,bg);x.fillStyle=style==='minimal'?bg:g;x.fillRect(0,0,w,h);
+if(style==='neon'){x.strokeStyle='#e7caff';x.lineWidth=8;x.strokeRect(35,35,w-70,h-70)}
+if(photoImage){let s=Math.max(w/photoImage.width,h/photoImage.height);x.globalAlpha=.48;x.drawImage(photoImage,(w-photoImage.width*s)/2,(h-photoImage.height*s)/2,photoImage.width*s,photoImage.height*s);x.globalAlpha=1;x.fillStyle='#0005';x.fillRect(0,0,w,h)}
+x.fillStyle=tc;x.textAlign='left';x.font='bold 27px system-ui';x.fillText(selected[5],60,95);
+let text=document.getElementById('mainText').value||'आपका डिज़ाइन',size=+document.getElementById('fontSize').value,max=780,lines=[];
+text.split('\n').forEach(part=>{let line='';part.split(' ').forEach(word=>{let next=line?line+' '+word:word;x.font=`900 ${size}px system-ui`;if(x.measureText(next).width>max&&line){lines.push(line);line=word}else line=next});if(line)lines.push(line)});
+while(size>24&&lines.some(l=>{x.font=`900 ${size}px system-ui`;return x.measureText(l).width>max}))size-=2;
+x.font=`900 ${size}px system-ui`;x.textBaseline='middle';let lineH=size*1.2,start=450-(lines.length-1)*lineH/2;lines.forEach((l,i)=>x.fillText(l,60,start+i*lineH));
+x.textBaseline='alphabetic';x.font='bold 22px system-ui';x.fillText(document.getElementById('subText').value,60,820);x.fillRect(60,840,100,5);document.getElementById('sizeLabel').textContent=document.getElementById('fontSize').value;
 }
-if(chosen>=20){
-let gradients=["#ff9f43","#e84393","#6c5ce7","#00cec9"];
-ctx.save();
-ctx.fillStyle=gradients[chosen%gradients.length];
-ctx.globalAlpha=.9;
-ctx.fillRect(0,canvas.height-105,canvas.width,105);
-ctx.restore();
-}
-let text=$("caption").value.trim();
-if(text){
-ctx.save();ctx.textAlign="center";ctx.textBaseline="middle";
-ctx.font="bold "+$("fontSize").value+"px Arial";
-ctx.lineWidth=4;ctx.strokeStyle="rgba(0,0,0,.65)";
-ctx.fillStyle=$("textColor").value;
-ctx.strokeText(text,canvas.width/2,canvas.height-55,canvas.width-30);
-ctx.fillText(text,canvas.width/2,canvas.height-55,canvas.width-30);
-ctx.restore();
-}
-}
-$("photo").addEventListener("change",e=>{
-const file=e.target.files[0];
-if(!file)return;
-if(!file.type.startsWith("image/")){alert("कृपया फोटो फ़ाइल चुनें।");return;}
-const url=URL.createObjectURL(file);
-const img=new Image();
-img.onload=()=>{
-photo=img;
-canvas.width=Math.min(1000,img.width);
-canvas.height=Math.min(1200,Math.round(img.height*(canvas.width/img.width)));
-draw();URL.revokeObjectURL(url);
-};
-img.onerror=()=>alert("फोटो खुल नहीं पाई। दूसरी फोटो आज़माएँ।");
-img.src=url;
-});
-["caption","textColor","fontSize","brightness","contrast","filter"].forEach(id=>{
-$(id).addEventListener("input",draw);
-$(id).addEventListener("change",draw);
-});
-$("apply").addEventListener("click",draw);
-$("download").addEventListener("click",()=>{
-if(!photo){alert("पहले अपनी फोटो चुनें।");return;}
-draw();
-canvas.toBlob(blob=>{
-if(!blob){alert("डाउनलोड तैयार नहीं हुआ।");return;}
-const url=URL.createObjectURL(blob);
-const a=document.createElement("a");
-a.href=url;a.download="sohan-photo-editor.png";a.click();
-setTimeout(()=>URL.revokeObjectURL(url),1500);
-},"image/png");
-});
-const container=$("templates");
-names.forEach((name,i)=>{
-const b=document.createElement("button");
-b.type="button";
-b.className="tpl"+(i>=40?" locked":"")+(i===0?" selected":"");
-b.innerHTML='<span class="sample">'+(i<40?emojis[i]:"🔒")+'</span>'+name;
-b.addEventListener("click",()=>{
-if(i>=40){
-alert("यह Premium टेम्पलेट भविष्य के अपडेट में उपलब्ध होगा। अभी कोई भुगतान सुविधा नहीं है।");
-return;
-}
-chosen=i;
-document.querySelectorAll(".tpl").forEach(el=>el.classList.remove("selected"));
-b.classList.add("selected");
-draw();
-});
-container.appendChild(b);
-});
-draw();
+document.getElementById('searchForm').onsubmit=e=>{e.preventDefault();filter(document.getElementById('search').value);document.getElementById('gallery').scrollIntoView({behavior:'smooth'})};
+['mainText','subText','textColor','bgColor','fontSize','style'].forEach(id=>document.getElementById(id).addEventListener('input',draw));
+document.getElementById('photo').onchange=e=>{const f=e.target.files[0];if(!f)return;if(!f.type.startsWith('image/')){alert('कृपया फोटो चुनें');return}const url=URL.createObjectURL(f),im=new Image();im.onload=()=>{photoImage=im;draw();URL.revokeObjectURL(url)};im.onerror=()=>alert('यह फोटो नहीं खुल पाई');im.src=url};
+document.getElementById('download').onclick=()=>{const a=document.createElement('a');a.download='sohan-studio-design.png';a.href=document.getElementById('canvas').toDataURL('image/png');a.click()};
+document.getElementById('reset').onclick=()=>{selected=data[0];photoImage=null;document.getElementById('photo').value='';document.getElementById('mainText').value='अपना स्टाइल बनाओ!';document.getElementById('subText').value='CREATED WITH SOHAN STUDIO';document.getElementById('textColor').value='#ffffff';document.getElementById('bgColor').value='#692fc0';document.getElementById('fontSize').value=58;document.getElementById('style').value='gradient';draw()};
+filter();draw();
 </script>
 </body>
 </html>
