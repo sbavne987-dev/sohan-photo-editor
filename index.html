@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111126">
+<title>Sohan Photo Editor</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10101d;color:#f7f7ff;font-family:Arial,sans-serif}
+header{padding:18px;background:#19192c;border-bottom:1px solid #34344c}
+header h1{margin:0;font-size:23px}
+header p{margin:6px 0 0;color:#b9b9d2;font-size:13px}
+main{max-width:950px;margin:auto;padding:16px}
+.panel{background:#1b1b30;border:1px solid #35354d;border-radius:15px;padding:15px;margin-bottom:16px}
+h2{font-size:18px;margin:0 0 13px}
+button,.upload{border:0;border-radius:9px;padding:11px 13px;background:#7658f5;color:white;font-weight:bold;cursor:pointer;font-size:13px}
+input,select{background:#111126;color:white;border:1px solid #42425c;padding:11px;border-radius:8px;max-width:100%;min-width:0}
+input[type=file]{width:100%}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.controls label{display:flex;flex-direction:column;gap:7px;font-size:12px;color:#d2d2e7}
+.wide{grid-column:1/-1}
+.canvas-wrap{background:#0a0a12;border-radius:12px;min-height:210px;display:flex;justify-content:center;align-items:center;overflow:hidden;padding:10px}
+canvas{max-width:100%;height:auto;max-height:65vh;object-fit:contain}
+.hint{color:#aaaac5;font-size:12px;line-height:1.6}
+.templates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.tpl{padding:9px 3px;min-height:76px;border:1px solid #454560;border-radius:10px;text-align:center;background:#24243c;color:white;font-size:12px;cursor:pointer}
+.tpl .sample{display:block;font-size:23px;margin-bottom:6px}
+.tpl.locked{opacity:.62;border-style:dashed}
+.tpl.selected{border:2px solid #a99aff;background:#333054}
+button:disabled{opacity:.4}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.actions button{flex:1}
+@media(min-width:650px){.templates{grid-template-columns:repeat(5,minmax(0,1fr))}.controls{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header>
+<h1>✦ Sohan Photo Editor</h1>
+<p>आपकी फोटो, आपका स्टाइल · 50 डिज़ाइन टेम्पलेट</p>
+</header>
+<main>
+<section class="panel">
+<h2>1. अपनी फोटो चुनें</h2>
+<input id="photo" type="file" accept="image/*">
+<p class="hint">अपनी गैलरी से फोटो चुनें। फोटो आपके ब्राउज़र में एडिट होगी।</p>
+</section>
+
+<section class="panel">
+<h2>2. फोटो एडिट करें</h2>
+<div class="canvas-wrap">
+<canvas id="canvas" width="600" height="750"></canvas>
+</div>
+<div class="controls" style="margin-top:13px">
+<label>अपना टेक्स्ट
+<input id="caption" placeholder="यहाँ अपना नाम लिखें" maxlength="100">
+</label>
+<label>टेक्स्ट का रंग
+<input id="textColor" type="color" value="#ffffff">
+</label>
+<label>फ़ॉन्ट आकार
+<input id="fontSize" type="range" min="18" max="90" value="38">
+</label>
+<label>ब्राइटनेस
+<input id="brightness" type="range" min="50" max="150" value="100">
+</label>
+<label>कॉन्ट्रास्ट
+<input id="contrast" type="range" min="50" max="150" value="100">
+</label>
+<label>फ़िल्टर
+<select id="filter">
+<option value="none">नॉर्मल</option>
+<option value="grayscale(1)">ब्लैक एंड व्हाइट</option>
+<option value="sepia(1)">विंटेज</option>
+<option value="saturate(1.8)">कलरफुल</option>
+<option value="hue-rotate(45deg)">कलर शिफ्ट</option>
+</select>
+</label>
+</div>
+<div class="actions">
+<button id="apply">एडिट लागू करें</button>
+<button id="download">PNG डाउनलोड करें</button>
+</div>
+<p class="hint">टेम्पलेट चुनने के बाद टेक्स्ट लिखकर “एडिट लागू करें” दबाएँ।</p>
+</section>
+
+<section class="panel">
+<h2>3. टेम्पलेट चुनें</h2>
+<p class="hint">पहले 40 टेम्पलेट मुफ्त हैं। अंतिम 10 Premium के लिए लॉक हैं। Premium अभी केवल डेमो है, कोई भुगतान न करें।</p>
+<div id="templates" class="templates"></div>
+</section>
+<footer class="hint" style="text-align:center;padding:12px">
+Sohan Photo Editor · Version 1.0
+</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const canvas=$("canvas"),ctx=canvas.getContext("2d");
+let photo=null,chosen=0;
+const names=[
+"Original","Soft Glow","Vintage","Black & White","Warm Tone",
+"Cool Tone","Dreamy","Golden","Rose","Purple",
+"Ocean","Sunset","Forest","Neon","Classic",
+"Portrait","Cinematic","Bright","Moody","Pastel",
+"Birthday","Wedding","Love","Friendship","Travel",
+"Nature","Festival","Diwali","Holi","Navratri",
+"New Year","Congratulations","Best Memories","My Style","Inspiration",
+"Minimal","Elegant","Retro","Color Pop","Night",
+"Premium Gold","Premium Rose","Premium Neon","Premium Royal",
+"Premium Wedding","Premium Film","Premium Dream","Premium Glow",
+"Premium Festival","Premium Portrait","Premium Creator"
+];
+const looks=[
+"none","brightness(1.08) saturate(1.1)","sepia(.45) contrast(1.1)",
+"grayscale(1)","sepia(.25) saturate(1.3)","hue-rotate(15deg)",
+"brightness(1.1) saturate(.8)","sepia(.3) saturate(1.4)",
+"hue-rotate(325deg) saturate(1.2)","hue-rotate(260deg)",
+"hue-rotate(170deg)","sepia(.2) saturate(1.8)",
+"hue-rotate(70deg) saturate(1.2)","saturate(2) contrast(1.2)",
+"contrast(1.1)","brightness(1.05)","contrast(1.3) saturate(1.1)",
+"brightness(1.2)","brightness(.8) contrast(1.2)",
+"saturate(.75) brightness(1.08)"
+];
+const emojis=["✦","☀","🎞","◐","🌅","❄","☁","✨","🌹","💜","🌊","🌇","🌿","⚡","◆","♡","🎬","☼","🌙","🌸","🎂","💍","♥","♧","✈","🌳","🎉","🪔","🎨","💃","🎆","🏆","📸","✧","★","◇","♛","📼","🌈","🌃"];
+function draw(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+if(photo){
+let scale=Math.min(canvas.width/photo.width,canvas.height/photo.height);
+let w=photo.width*scale,h=photo.height*scale;
+ctx.save();
+ctx.filter=(looks[chosen%looks.length]||"none")+" brightness("+$("brightness").value+"%) contrast("+$("contrast").value+"%) "+$("filter").value;
+ctx.drawImage(photo,(canvas.width-w)/2,(canvas.height-h)/2,w,h);
+ctx.restore();
+}else{
+ctx.fillStyle="#20203a";ctx.fillRect(0,0,600,750);
+ctx.textAlign="center";ctx.fillStyle="#aaa5ff";ctx.font="bold 35px Arial";
+ctx.fillText("SOHAN",300,340);ctx.fillText("PHOTO EDITOR",300,390);
+ctx.font="16px Arial";ctx.fillStyle="#eeeeff";
+ctx.fillText("अपनी फोटो चुनकर शुरू करें",300,440);
+}
+if(chosen>=20){
+let gradients=["#ff9f43","#e84393","#6c5ce7","#00cec9"];
+ctx.save();
+ctx.fillStyle=gradients[chosen%gradients.length];
+ctx.globalAlpha=.9;
+ctx.fillRect(0,canvas.height-105,canvas.width,105);
+ctx.restore();
+}
+let text=$("caption").value.trim();
+if(text){
+ctx.save();ctx.textAlign="center";ctx.textBaseline="middle";
+ctx.font="bold "+$("fontSize").value+"px Arial";
+ctx.lineWidth=4;ctx.strokeStyle="rgba(0,0,0,.65)";
+ctx.fillStyle=$("textColor").value;
+ctx.strokeText(text,canvas.width/2,canvas.height-55,canvas.width-30);
+ctx.fillText(text,canvas.width/2,canvas.height-55,canvas.width-30);
+ctx.restore();
+}
+}
+$("photo").addEventListener("change",e=>{
+const file=e.target.files[0];
+if(!file)return;
+if(!file.type.startsWith("image/")){alert("कृपया फोटो फ़ाइल चुनें।");return;}
+const url=URL.createObjectURL(file);
+const img=new Image();
+img.onload=()=>{
+photo=img;
+canvas.width=Math.min(1000,img.width);
+canvas.height=Math.min(1200,Math.round(img.height*(canvas.width/img.width)));
+draw();URL.revokeObjectURL(url);
+};
+img.onerror=()=>alert("फोटो खुल नहीं पाई। दूसरी फोटो आज़माएँ।");
+img.src=url;
+});
+["caption","textColor","fontSize","brightness","contrast","filter"].forEach(id=>{
+$(id).addEventListener("input",draw);
+$(id).addEventListener("change",draw);
+});
+$("apply").addEventListener("click",draw);
+$("download").addEventListener("click",()=>{
+if(!photo){alert("पहले अपनी फोटो चुनें।");return;}
+draw();
+canvas.toBlob(blob=>{
+if(!blob){alert("डाउनलोड तैयार नहीं हुआ।");return;}
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;a.download="sohan-photo-editor.png";a.click();
+setTimeout(()=>URL.revokeObjectURL(url),1500);
+},"image/png");
+});
+const container=$("templates");
+names.forEach((name,i)=>{
+const b=document.createElement("button");
+b.type="button";
+b.className="tpl"+(i>=40?" locked":"")+(i===0?" selected":"");
+b.innerHTML='<span class="sample">'+(i<40?emojis[i]:"🔒")+'</span>'+name;
+b.addEventListener("click",()=>{
+if(i>=40){
+alert("यह Premium टेम्पलेट भविष्य के अपडेट में उपलब्ध होगा। अभी कोई भुगतान सुविधा नहीं है।");
+return;
+}
+chosen=i;
+document.querySelectorAll(".tpl").forEach(el=>el.classList.remove("selected"));
+b.classList.add("selected");
+draw();
+});
+container.appendChild(b);
+});
+draw();
+</script>
+</body>
+</html>
